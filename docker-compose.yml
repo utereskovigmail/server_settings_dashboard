@@ -1,0 +1,46 @@
+version: "3.9"
+
+networks:
+  dashboardNet:
+    driver: bridge
+
+services:
+  postgresServerDb:
+    image: postgres:18.1
+    container_name: postgres_db
+    restart: always
+    ports:
+      - "5022:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ${VOLUME_POSTGRES}
+    networks:
+      - dashboardNet
+      
+  api:
+    # build: .
+    image: utereskovi/dashboard-api:latest
+    container_name: dashboard_api
+    volumes:
+      - /data/dashboard/images:/app/images
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresServerDb:5432/${POSTGRES_DB}
+    ports:
+      - "5898:8000"
+    depends_on:
+      - postgresServerDb
+    networks:
+      - dashboardNet
+
+  front:
+    image: utereskovi/dashboard-react:latest
+    # build: 
+    #   context: ./my-dashboard-ts
+    container_name: dashboard_front
+    ports:
+      - "3987:80"
+    networks:
+      - dashboardNet
