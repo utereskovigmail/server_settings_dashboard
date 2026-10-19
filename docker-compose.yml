@@ -30,7 +30,7 @@ services:
       - TZ=Europe/Kiev
       - DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresServerDb:5432/${POSTGRES_DB}
     ports:
-      - "5898:8000"
+      - "5898:8080"
     depends_on:
       - postgresServerDb
     networks:
